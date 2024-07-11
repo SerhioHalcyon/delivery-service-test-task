@@ -1,0 +1,78 @@
+version: '3.9'
+
+services:
+    app:
+        build:
+            context: ./
+            dockerfile: ./docker-compose/Dockerfile
+        image: delivery-service
+        container_name: delivery-service-app
+        restart: unless-stopped
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        networks:
+            - delivery-service
+
+    web:
+        image: nginx:1.23.3-alpine
+        container_name: delivery-service-nginx
+        restart: unless-stopped
+        ports:
+            - ${APP_PORT:-8000}:80
+        volumes:
+            - ./:/var/www
+            - ./docker-compose/nginx:/etc/nginx/conf.d/default.conf
+        networks:
+            - delivery-service
+
+    database:
+        image: mysql:8.0
+        container_name: delivery-service-mysql
+        restart: unless-stopped
+        ports:
+            - ${FORWARD_DB_PORT:-3306}:3306
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_USER: ${DB_USERNAME}
+        volumes:
+            - mysql:/var/lib/mysql
+        networks:
+            - delivery-service
+
+    redis:
+        image: redis:alpine
+        container_name: delivery-service-redis
+        restart: unless-stopped
+        ports:
+            - ${FORWARD_REDIS_PORT:-6379}:6379
+        volumes:
+            - redis:/data
+        networks:
+            - delivery-service
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            retries: 3
+            timeout: 5s
+
+    phpmyadmin:
+        image: phpmyadmin
+        container_name: delivery-service-phpmyadmin
+        restart: unless-stopped
+        ports:
+            - ${FORWARD_PHPMYADMIN_PORT:-8080}:80
+        environment:
+            - PMA_HOST=database
+        networks:
+            - delivery-service
+
+networks:
+    delivery-service:
+        driver: bridge
+volumes:
+    mysql:
+        driver: local
+    redis:
+        driver: local
