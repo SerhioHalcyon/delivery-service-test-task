@@ -3,8 +3,11 @@
 namespace App\Providers;
 
 use App\Contracts\Delivery\Delivery as DeliveryContract;
-use App\Enums\DeliveryProvider;
-use App\Facades\Delivery\NovaPoshta\Accessor;
+use App\Facades\Delivery\{
+    NovaPoshta\Accessor as NovaPoshtaAccessor,
+    UkrPoshta\Accessor as UkrPoshtaAccessor,
+    Justin\Accessor as JustinAccessor,
+};
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
@@ -19,11 +22,9 @@ class DeliveryServiceProvider extends ServiceProvider implements DeferrableProvi
     public function register(): void
     {
         $this->app->bind(DeliveryContract::class, function (Application $app) {
-            // Use config because this part is more stable.
-            switch (config('delivery.default')) {
-                case config('delivery.providers.novaposhta.driver'):
-                    return new Accessor();
-            }
+            $provider = config('delivery.default');
+
+            return $app->make(config("delivery.providers.{$provider}.driver"));
         });
     }
 

@@ -20,4 +20,10 @@ class Delivery extends Facade
         */
         return \App\Contracts\Delivery\Delivery::class;
     }
+
+    // This feature is still in the testing stage.
+    public static function provider(string $provider)
+    {
+        return app(config('delivery.providers.' . $provider)['driver']);
+    }
 }

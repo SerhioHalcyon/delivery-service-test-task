@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Facades\Delivery\NovaPoshta;
+namespace App\Facades\Delivery\UkrPoshta;
 
 use App\Contracts\Delivery\Delivery;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\Response;
+use Illuminate\Support\Facades\Http;
 
 class Accessor implements Delivery
 {
     public function getProviderName(): string
     {
-        return 'NovaPoshta';
+        return 'UkrPoshta';
     }
     public function getProviderAddress(): string
     {
