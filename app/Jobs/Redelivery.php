@@ -2,7 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Enums\DeliveryStatus;
 use App\Facades\Delivery;
+use App\Models\Delivery as DeliveryModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -18,7 +20,7 @@ class Redelivery implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private array $data)
+    public function __construct(private DeliveryModel $deliveryModel)
     {
 
     }
@@ -28,6 +30,17 @@ class Redelivery implements ShouldQueue
      */
     public function handle(): void
     {
-        Http::post('novaposhta.test/api/delivery', $this->data);
+        $this->deliveryModel->fresh();
+
+        if ($this->deliveryModel->status !== DeliveryStatus::FAILED) {
+            return;
+        }
+
+        $response = Delivery::sendParcel($this->deliveryModel->toDeliveryData());
+
+        if ($response->successful()) {
+            $this->deliveryModel->status = DeliveryStatus::SENT;
+            $this->deliveryModel->save();
+        }
     }
 }
