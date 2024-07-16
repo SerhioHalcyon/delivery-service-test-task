@@ -20,11 +20,11 @@ of these components, ensuring a clean and maintainable codebase.
 
 ### General Architecture
 
-![Architecture Concepts](documentation/Architecture Concepts.drawio.png)
+![Architecture Concepts](documentation/Architecture_Concepts.drawio.png)
 
 ### Directory Structure
 
-![Directory Structure](documentation/Directory structure.drawio.png)
+![Directory Structure](documentation/Directory_Structure.drawio.png)
 
 ## Testing
 
