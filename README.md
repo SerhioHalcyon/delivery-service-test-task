@@ -1,5 +1,7 @@
 # Project: E-commerce Store - Sending Data to Courier Service
 
+The original test assignment can be found [here](documentation/Test_Case_Original.pdf).
+
 ## Introduction
 
 This project implements the logic for sending parcel data 
